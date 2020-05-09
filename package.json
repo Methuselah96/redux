@@ -105,5 +105,8 @@
     "testRegex": "(/test/.*\\.spec\\.[tj]s)$",
     "coverageProvider": "v8"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "tsd": {
+    "directory": "./test/typescript"
+  }
 }
