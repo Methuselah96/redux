@@ -26,7 +26,6 @@ const noExtend: ExtendState<State, never> = {
     d: 'd'
   }
 }
-// typings:expect-error
 const noExtendError: ExtendState<State, never> = {
   a: 'a',
   b: {

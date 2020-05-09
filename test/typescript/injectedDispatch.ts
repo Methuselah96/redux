@@ -1,4 +1,5 @@
 import { Dispatch, Action } from '../..'
+import { expectError } from 'tsd'
 
 interface Component<P> {
   props: P
@@ -20,10 +21,8 @@ function simple() {
     return {
       onClick() {
         dispatch({ type: 'INCREMENT' })
-        // typings:expect-error
-        dispatch(Promise.resolve({ type: 'INCREMENT' }))
-        // typings:expect-error
-        dispatch('not-an-action')
+        expectError(dispatch(Promise.resolve({ type: 'INCREMENT' })))
+        expectError(dispatch('not-an-action'))
       }
     }
   })
@@ -52,12 +51,9 @@ function discriminated() {
         onClick() {
           dispatch({ type: 'INCREMENT' })
           dispatch({ type: 'DECREMENT', count: 10 })
-          // typings:expect-error
-          dispatch({ type: 'DECREMENT', count: '' })
-          // typings:expect-error
-          dispatch({ type: 'SOME_OTHER_TYPE' })
-          // typings:expect-error
-          dispatch('not-an-action')
+          expectError(dispatch({ type: 'DECREMENT', count: '' }))
+          expectError(dispatch({ type: 'SOME_OTHER_TYPE' }))
+          expectError(dispatch('not-an-action'))
         }
       }
     }
@@ -77,8 +73,7 @@ function promise() {
       onClick() {
         dispatch({ type: 'INCREMENT' })
         dispatch(Promise.resolve({ type: 'INCREMENT' }))
-        // typings:expect-error
-        dispatch('not-an-action')
+        expectError(dispatch('not-an-action'))
       }
     }
   })

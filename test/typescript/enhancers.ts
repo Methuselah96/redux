@@ -1,4 +1,5 @@
 import { StoreEnhancer, Action, AnyAction, Reducer, createStore } from '../..'
+import { expectError } from 'tsd'
 
 interface State {
   someField: 'string'
@@ -35,10 +36,8 @@ function dispatchExtension() {
 
   store.dispatch({ type: 'INCREMENT' })
   store.dispatch(Promise.resolve({ type: 'INCREMENT' }))
-  // typings:expect-error
-  store.dispatch('not-an-action')
-  // typings:expect-error
-  store.dispatch(Promise.resolve('not-an-action'))
+  expectError(store.dispatch('not-an-action'))
+  expectError(store.dispatch(Promise.resolve('not-an-action')))
 }
 
 /**
@@ -76,8 +75,7 @@ function stateExtension() {
 
   store.getState().someField
   store.getState().extraField
-  // typings:expect-error
-  store.getState().wrongField
+  expectError(store.getState().wrongField)
 }
 
 /**
@@ -96,8 +94,7 @@ function extraMethods() {
 
   store.getState()
   const res: string = store.method()
-  // typings:expect-error
-  store.wrongMethod()
+  expectError(store.wrongMethod())
 }
 
 /**
@@ -141,12 +138,10 @@ function replaceReducerExtender() {
   const newStore = store.replaceReducer(newReducer)
   newStore.getState().test
   newStore.getState().extraField
-  // typings:expect-error
-  newStore.getState().wrongField
+  expectError(newStore.getState().wrongField)
 
   const res: string = newStore.method()
-  // typings:expect-error
-  newStore.wrongMethod()
+  expectError(newStore.wrongMethod())
 }
 
 function mhelmersonExample() {
@@ -213,10 +208,8 @@ function mhelmersonExample() {
     store.replaceReducer(reducer)
 
     store.getState().extraField
-    // typings:expect-error
-    store.getState().wrongField
-    // typings:expect-error
-    store.getState().test
+    expectError(store.getState().wrongField)
+    expectError(store.getState().test)
 
     const newReducer = (
       state: { test: boolean } = { test: true },
@@ -226,8 +219,7 @@ function mhelmersonExample() {
     const newStore = store.replaceReducer(newReducer)
     newStore.getState().test
     newStore.getState().extraField
-    // typings:expect-error
-    newStore.getState().wrongField
+    expectError(newStore.getState().wrongField)
   }
 }
 
@@ -279,8 +271,7 @@ function finalHelmersonExample() {
   const store = createStore(reducer, createPersistEnhancer('hi'))
 
   store.getState().foo
-  // typings:expect-error
-  store.getState().wrongField
+  expectError(store.getState().wrongField)
 
   const newReducer = (
     state: { test: boolean } = { test: true },
@@ -289,8 +280,6 @@ function finalHelmersonExample() {
 
   const newStore = store.replaceReducer(newReducer)
   newStore.getState().test
-  // typings:expect-error
-  newStore.getState().whatever
-  // typings:expect-error
-  newStore.getState().wrongField
+  expectError(newStore.getState().whatever)
+  expectError(newStore.getState().wrongField)
 }

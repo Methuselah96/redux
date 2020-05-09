@@ -1,4 +1,5 @@
 import { combineReducers, createStore } from '../..'
+import { expectError } from 'tsd'
 
 /**
  * verify that replaceReducer maintains strict typing if the new types change
@@ -15,12 +16,10 @@ store.dispatch(ACTION)
 
 const firstState = store.getState()
 firstState.bar.value
-// typings:expect-error
-firstState.baz.value
+expectError(firstState.baz.value)
 
 const nextStore = store.replaceReducer(combineReducers({ baz })) // returns ->  { baz: { value: 'baz' }}
 
 const nextState = nextStore.getState()
-// typings:expect-error
-nextState.bar.value
+expectError(nextState.bar.value)
 nextState.baz.value

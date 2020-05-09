@@ -1,4 +1,5 @@
 import { Dispatch } from '../..'
+import { expectError } from 'tsd'
 
 /**
  * Default Dispatch type accepts any object with `type` property.
@@ -9,11 +10,9 @@ function simple() {
   const a = dispatch({ type: 'INCREMENT', count: 10 })
 
   a.count
-  // typings:expect-error
-  a.wrongProp
+  expectError(a.wrongProp)
 
-  // typings:expect-error
-  dispatch('not-an-action')
+  expectError(dispatch('not-an-action'))
 }
 
 /**
@@ -38,9 +37,7 @@ function discriminated() {
   dispatch({ type: 'INCREMENT' })
   dispatch({ type: 'DECREMENT', count: 10 })
   // Known actions are strictly checked.
-  // typings:expect-error
-  dispatch({ type: 'DECREMENT', count: '' })
+  expectError(dispatch({ type: 'DECREMENT', count: '' }))
   // Unknown actions are rejected.
-  // typings:expect-error
-  dispatch({ type: 'SOME_OTHER_TYPE' })
+  expectError(dispatch({ type: 'SOME_OTHER_TYPE' }))
 }

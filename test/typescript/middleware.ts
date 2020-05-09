@@ -8,6 +8,7 @@ import {
   Action,
   AnyAction
 } from '../..'
+import { expectError } from 'tsd'
 
 /**
  * Logger middleware doesn't add any extra types to dispatch, just logs actions
@@ -90,8 +91,7 @@ function customState() {
     next: Dispatch
   ) => action => {
     api.getState().field
-    // typings:expect-error
-    api.getState().wrongField
+    expectError(api.getState().wrongField)
 
     return next(action)
   }
@@ -113,8 +113,7 @@ function customDispatch() {
   ) => next => action => {
     api.dispatch({ type: 'INCREMENT' })
     api.dispatch({ type: 'DECREMENT' })
-    // typings:expect-error
-    api.dispatch({ type: 'UNKNOWN' })
+    expectError(api.dispatch({ type: 'UNKNOWN' }))
   }
 }
 
@@ -133,10 +132,8 @@ function apply() {
   const storeWithLogger = createStore(reducer, applyMiddleware(logger()))
   // can only dispatch actions
   storeWithLogger.dispatch({ type: 'INCREMENT' })
-  // typings:expect-error
-  storeWithLogger.dispatch(Promise.resolve({ type: 'INCREMENT' }))
-  // typings:expect-error
-  storeWithLogger.dispatch('not-an-action')
+  expectError(storeWithLogger.dispatch(Promise.resolve({ type: 'INCREMENT' })))
+  expectError(storeWithLogger.dispatch('not-an-action'))
 
   /**
    * promise
@@ -145,10 +142,8 @@ function apply() {
   // can dispatch actions and promises
   storeWithPromise.dispatch({ type: 'INCREMENT' })
   storeWithPromise.dispatch(Promise.resolve({ type: 'INCREMENT' }))
-  // typings:expect-error
-  storeWithPromise.dispatch('not-an-action')
-  // typings:expect-error
-  storeWithPromise.dispatch(Promise.resolve('not-an-action'))
+  expectError(storeWithPromise.dispatch('not-an-action'))
+  expectError(storeWithPromise.dispatch(Promise.resolve('not-an-action')))
 
   /**
    * promise + logger
@@ -160,10 +155,8 @@ function apply() {
   // can dispatch actions and promises
   storeWithPromiseAndLogger.dispatch({ type: 'INCREMENT' })
   storeWithPromiseAndLogger.dispatch(Promise.resolve({ type: 'INCREMENT' }))
-  // typings:expect-error
-  storeWithPromiseAndLogger.dispatch('not-an-action')
-  // typings:expect-error
-  storeWithPromiseAndLogger.dispatch(Promise.resolve('not-an-action'))
+  expectError(storeWithPromiseAndLogger.dispatch('not-an-action'))
+  expectError(storeWithPromiseAndLogger.dispatch(Promise.resolve('not-an-action')))
 
   /**
    * promise + thunk
@@ -177,20 +170,16 @@ function apply() {
   storeWithPromiseAndThunk.dispatch(Promise.resolve({ type: 'INCREMENT' }))
   storeWithPromiseAndThunk.dispatch((dispatch, getState) => {
     getState().someField
-    // typings:expect-error
-    getState().wrongField
+    expectError(getState().wrongField)
 
     // injected dispatch accepts actions, thunks and promises
     dispatch({ type: 'INCREMENT' })
     dispatch(dispatch => dispatch({ type: 'INCREMENT' }))
     dispatch(Promise.resolve({ type: 'INCREMENT' }))
-    // typings:expect-error
-    dispatch('not-an-action')
+    expectError(dispatch('not-an-action'))
   })
-  // typings:expect-error
-  storeWithPromiseAndThunk.dispatch('not-an-action')
-  // typings:expect-error
-  storeWithPromiseAndThunk.dispatch(Promise.resolve('not-an-action'))
+  expectError(storeWithPromiseAndThunk.dispatch('not-an-action'))
+  expectError(storeWithPromiseAndThunk.dispatch(Promise.resolve('not-an-action')))
 
   /**
    * Test variadic signature.
