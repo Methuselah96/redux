@@ -5,7 +5,8 @@ import {
   Action,
   StoreEnhancer,
   Unsubscribe,
-  Observer
+  Observer,
+  compose
 } from '../..'
 import 'symbol-observable'
 
@@ -82,9 +83,12 @@ const storeWithActionReducerAndBadPreloadedState = createStore(
   }
 )
 
-const enhancer: StoreEnhancer = next => next
+declare const enhancer: StoreEnhancer<{ extended1: string }>;
+declare const anotherEnhancer: StoreEnhancer<{ extended2: string }>;
+const composeEnhancer = compose(enhancer, anotherEnhancer);
 
-const storeWithSpecificEnhancer = createStore(reducer, enhancer)
+const storeWithSpecificEnhancer = createStore(reducer, composeEnhancer)
+const extension = storeWithSpecificEnhancer.extended2
 
 const storeWithPreloadedStateAndEnhancer = createStore(
   reducer,
