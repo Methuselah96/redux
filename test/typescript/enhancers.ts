@@ -63,7 +63,9 @@ function stateExtension() {
     reducer: Reducer<S, A>,
     preloadedState?: any
   ) => {
-    const wrappedReducer: Reducer<S & ExtraState, A> = (state, action) => {
+    const wrapReducer = (
+      reducer: Reducer<S, A>
+    ): Reducer<S & ExtraState, A> => (state, action) => {
       const newState = reducer(state, action)
       return {
         ...newState,
@@ -76,7 +78,14 @@ function stateExtension() {
           extraField: 'extra'
         }
       : undefined
-    return createStore(wrappedReducer, wrappedPreloadedState)
+
+    const store = createStore(wrapReducer(reducer), wrappedPreloadedState)
+    return {
+      ...store,
+      replaceReducer(nextReducer: Reducer<S, A>) {
+        store.replaceReducer(wrapReducer(nextReducer))
+      }
+    }
   }
 
   const store = createStore(reducer, enhancer)
@@ -95,8 +104,7 @@ function extraMethods() {
     ...args
   ) => {
     const store = createStore(...args)
-    store.method = () => 'foo'
-    return store
+    return { ...store, method: () => 'foo' }
   }
 
   const store = createStore(reducer, enhancer)
@@ -122,7 +130,9 @@ function replaceReducerExtender() {
     reducer: Reducer<S, A>,
     preloadedState?: any
   ) => {
-    const wrappedReducer: Reducer<S & ExtraState, A> = (state, action) => {
+    const wrapReducer = (
+      reducer: Reducer<S, A>
+    ): Reducer<S & ExtraState, A> => (state, action) => {
       const newState = reducer(state, action)
       return {
         ...newState,
@@ -135,7 +145,14 @@ function replaceReducerExtender() {
           extraField: 'extra'
         }
       : undefined
-    return createStore(wrappedReducer, wrappedPreloadedState)
+    const store = createStore(wrapReducer(reducer), wrappedPreloadedState)
+    return {
+      ...store,
+      replaceReducer(nextReducer: Reducer<S, A>) {
+        store.replaceReducer(wrapReducer(nextReducer))
+      },
+      method: () => 'foo'
+    }
   }
 
   const store = createStore(reducer, enhancer)

@@ -5,8 +5,7 @@ import {
   PreloadedState,
   StoreEnhancer,
   Dispatch,
-  Observer,
-  ExtendState
+  Observer
 } from './types/store'
 import { Action } from './types/actions'
 import { Reducer } from './types/reducers'
@@ -42,7 +41,7 @@ export default function createStore<
   S,
   A extends Action,
   Ext = {},
-  StateExt = never
+  StateExt = {}
 >(
   reducer: Reducer<S, A>,
   enhancer?: StoreEnhancer<Ext, StateExt>
@@ -51,7 +50,7 @@ export default function createStore<
   S,
   A extends Action,
   Ext = {},
-  StateExt = never
+  StateExt = {}
 >(
   reducer: Reducer<S, A>,
   preloadedState?: PreloadedState<S>,
@@ -61,7 +60,7 @@ export default function createStore<
   S,
   A extends Action,
   Ext = {},
-  StateExt = never
+  StateExt = {}
 >(
   reducer: Reducer<S, A>,
   preloadedState?: PreloadedState<S> | StoreEnhancer<Ext, StateExt>,
@@ -122,7 +121,7 @@ export default function createStore<
    *
    * @returns The current state tree of your application.
    */
-  function getState(): ExtendState<S, StateExt> {
+  function getState(): S & StateExt {
     if (isDispatching) {
       throw new Error(
         'You may not call store.getState() while the reducer is executing. ' +
@@ -131,7 +130,7 @@ export default function createStore<
       )
     }
 
-    return currentState as ExtendState<S, StateExt>
+    return currentState as S & StateExt
   }
 
   /**
@@ -303,9 +302,7 @@ export default function createStore<
         }
 
         function observeState() {
-          const observerAsObserver = observer as Observer<
-            ExtendState<S, StateExt>
-          >
+          const observerAsObserver = observer as Observer<S & StateExt>
           if (observerAsObserver.next) {
             observerAsObserver.next(getState())
           }
