@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-const $$observable = /* #__PURE__ */ (() =>
-  (typeof Symbol === 'function' && Symbol.observable) || '@@observable')()
+const $$observable: unique symbol = /* #__PURE__ */ (() =>
+  (typeof Symbol === 'function' && Symbol.observable) || '@@observable' as any)()
 
 export default $$observable

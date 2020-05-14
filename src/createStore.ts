@@ -91,7 +91,7 @@ export default function createStore<
     return enhancer(createStore)(
       reducer,
       preloadedState as PreloadedState<S>
-    ) as Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
+    )
   }
 
   if (typeof reducer !== 'function') {
@@ -99,7 +99,7 @@ export default function createStore<
   }
 
   let currentReducer = reducer
-  let currentState = preloadedState as S
+  let currentState = preloadedState as unknown as ExtendState<S, StateExt>
   let currentListeners: (() => void)[] | null = []
   let nextListeners = currentListeners
   let isDispatching = false
@@ -122,7 +122,7 @@ export default function createStore<
    *
    * @returns The current state tree of your application.
    */
-  function getState(): S {
+  function getState(): ExtendState<S, StateExt> {
     if (isDispatching) {
       throw new Error(
         'You may not call store.getState() while the reducer is executing. ' +
@@ -131,7 +131,7 @@ export default function createStore<
       )
     }
 
-    return currentState as S
+    return currentState
   }
 
   /**
@@ -267,7 +267,7 @@ export default function createStore<
    * @param nextReducer The reducer for the store to use instead.
    * @returns The same store instance with a new reducer in place.
    */
-  function replaceReducer<NewState, NewActions extends A>(
+  function replaceReducer<NewState, NewActions extends Action>(
     nextReducer: Reducer<NewState, NewActions>
   ): Store<ExtendState<NewState, StateExt>, NewActions, StateExt, Ext> & Ext {
     if (typeof nextReducer !== 'function') {
@@ -340,12 +340,12 @@ export default function createStore<
   // the initial state tree.
   dispatch({ type: ActionTypes.INIT } as A)
 
-  const store = ({
+  const store: Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext = ({
     dispatch: dispatch as Dispatch<A>,
     subscribe,
     getState,
     replaceReducer,
     [$$observable]: observable
-  } as unknown) as Store<ExtendState<S, StateExt>, A, StateExt, Ext> & Ext
+  })
   return store
 }
